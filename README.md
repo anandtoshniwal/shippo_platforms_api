@@ -5,6 +5,12 @@
 
 This module provides integration with the Shippo API for managing merchant accounts, shipments, labels, and tracking. It includes methods for creating and updating merchant accounts, managing carrier accounts, creating shipments, generating labels, retrieving rates, and tracking shipments.
 
+## Installation
+
+1. Download the using composer or clone it from the repository.
+2. If cloned, place the module in the `modules/custom` directory of your Drupal installation.
+
+
 ## Configuration
 
 1. Obtain API credentials from Shippo.
@@ -140,36 +146,40 @@ Errors and exceptions are logged using Drupal's logger (`$this->loggerChannel`).
 
 ### 10. `getMerchantShipments()`
 
-    Retrieves shipments for a merchant.
-    
-    - **Method**: GET
-    - **Endpoint**: `/merchants/{merchant_id}/shipments`
-    - **Parameters**:
-      - `$merchant_id`: ID of the merchant account.
-    - **Returns**: List of shipments.
+Retrieves shipments for a merchant.
+
+- **Method**: GET
+- **Endpoint**: `/merchants/{merchant_id}/shipments`
+- **Parameters**:
+  - `$merchant_id`: ID of the merchant account.
+- **Returns**: List of shipments.
+
+---
 
 ### 11. `getMerchantLabels()`
 
-    Retrieves labels for a merchant.
-    
-    - **Method**: GET
-    - **Endpoint**: `/merchants/{merchant_id}/transactions`
-    - **Parameters**:
-      - `$merchant_id`: ID of the merchant account.
-      - `$start_index`: Start index for pagination (optional).
-      - `$end_index`: End index for pagination (optional).
-    - **Returns**: List of labels.
+Retrieves labels for a merchant.
+
+- **Method**: GET
+- **Endpoint**: `/merchants/{merchant_id}/transactions`
+- **Parameters**:
+  - `$merchant_id`: ID of the merchant account.
+  - `$start_index`: Start index for pagination (optional).
+  - `$end_index`: End index for pagination (optional).
+- **Returns**: List of labels.
+
+---
 
 ### 12. `validateAddress()`
 
-    Validates an address for a merchant.
-    
-    - **Method**: POST
-    - **Endpoint**: `/merchants/{merchant_id}/addresses`
-    - **Parameters**:
-      - `$merchant_id`: ID of the merchant account.
-      - `$address`: Address to validate.
-    - **Returns**: Boolean indicating address validation status.
+Validates an address for a merchant.
+
+- **Method**: POST
+- **Endpoint**: `/merchants/{merchant_id}/addresses`
+- **Parameters**:
+  - `$merchant_id`: ID of the merchant account.
+  - `$address`: Address to validate.
+- **Returns**: Boolean indicating address validation status.
 
 ## Notes
 
