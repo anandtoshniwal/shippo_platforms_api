@@ -1,0 +1,13 @@
+shippo_platforms_api.configurations:
+  title: Shippo
+  description: Shippo.
+  parent: commerce.configuration
+  route_name: shippo_platforms_api.services_config
+  weight: -1
+
+shippo_platforms_api.services_config:
+  title: Shippo Configurations
+  description: Shippo Configurations.
+  parent: patternry_shippo_api.configurations
+  route_name: shippo_platforms_api.services_config
+  weight: 1

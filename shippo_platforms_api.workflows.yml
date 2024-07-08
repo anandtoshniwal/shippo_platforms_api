@@ -1,0 +1,48 @@
+patternry_shippo_shipment:
+  id: patternry_shippo_workflow
+  label: "Patternry shippo workflow"
+  group: commerce_shipment
+  states:
+    draft:
+      label: "Unpaid"
+    ready:
+      label: "Paid"
+    shipped:
+      label: "Pre transit"
+    transit:
+      label: "Transit"
+    delivered:
+      label: "Delivered"
+    returned:
+      label: "Returned"
+    failure:
+      label: "Failure"
+    unknown:
+      label: "Unknown"
+    cancel:
+      label: "Cancel"
+  transitions:
+    finalize:
+      label: "Paid"
+      from: ["draft"]
+      to: ready
+    ship:
+      label: "Pre Transit"
+      from: ["ready"]
+      to: shipped
+    transit:
+      label: "Transit"
+      from: ["shipped"]
+      to: transit
+    delivered:
+      label: "Deliver"
+      from: ["transit"]
+      to: delivered
+    cancel:
+      label: "Cancel"
+      from: ["ready", "shipped", "transit", "delivered"]
+      to: cancel
+    returned:
+      label: "Returned"
+      from: ["delivered"]
+      to: returned

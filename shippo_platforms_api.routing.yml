@@ -1,0 +1,7 @@
+shippo_platforms_api.services_config:
+  path: '/admin/config/shippo-platforms-api/info/settings'
+  defaults:
+    _form: '\Drupal\shippo_platforms_api\Form\ShippoPlatformsApiInfoForm'
+    _title: 'Shippo Platforms API Setting'
+  requirements:
+    _permission: 'administer shippo platofms api'

@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @file
+ * Shippo Platforms API module file.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function shippo_platforms_api_commerce_store_insert(EntityInterface $entity) {
+  /*On add store, call the merchant add API */
+  $uid = $entity->getOwner()->id();
+  $merchant_email = $entity->getEmail();
+  $merchant_name = $entity->getName();
+  $merchant_id = \Drupal::service('shippo_latforms_api.shippo_api')->createMerchantFromUserId($uid, $merchant_email, $merchant_name);
+  if (isset($merchant_id) && !empty($merchant_id)) {
+    $entity->set('field_merchant_account_id', $merchant_id);
+    $entity->save();
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function shippo_platforms_api_commerce_store_presave(EntityInterface $entity) {
+  $uid = $entity->getOwner()->id();
+  if ($entity->original) {
+    /*On update store, call the merchant update API*/
+    $newMerchantName = $entity->getName();
+    $exMerchantName = $entity->original->get('name')->value;
+    $newMerchantEmail = $entity->getEmail();
+    $exMerchantEmail = $entity->original->get('mail')->value;
+    if ($exMerchantName != $newMerchantName || $exMerchantEmail != $newMerchantEmail) {
+      $merchantId = $entity->get('field_merchant_account_id')->value;
+      \Drupal::service('shippo_latforms_api.shippo_api')->updateMerchantFromMerchantId($uid, $merchantId, $newMerchantEmail, $newMerchantName);
+    }
+  }
+}
+
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function shippo_platforms_api_form_commerce_product_variation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = 'shippo_platforms_api_validation_variation_dimension_validate';
+}
+
+/**
+ * Function to check whether product variation dimension as per shippo support.
+ */
+function shippo_platforms_api_validation_variation_dimension_validate(&$form, FormStateInterface $form_state) {
+  if ($form_state->hasValue('dimensions')) {
+    if (!empty($form_state->getValue('dimensions')[0]['length'])) {
+      $parcel = [];
+      $dimension = $form_state->getValue('dimensions');
+      $weight_ary = $form_state->getValue('weight');
+      $parcel['length'] = $dimension[0]['length'];
+      $parcel['width'] = $dimension[0]['width'];
+      $parcel['height'] = $dimension[0]['height'];
+      $parcel['distance_unit'] = $dimension[0]['unit'];
+      $parcel['weight'] = $weight_ary[0]['number'];
+      $parcel['mass_unit'] = $weight_ary[0]['unit'];
+      $parcel['quantity'] = 1;
+      $product = \Drupal::routeMatch()->getParameter('commerce_product');
+      if (!is_object($product)) {
+        $product = \Drupal::entityTypeManager()->getStorage('commerce_product')->load($product);
+      }
+      $store_id = $product->getStoreIds()[0];
+      $store_obj = \Drupal::entityTypeManager()->getStorage('commerce_store')->load($store_id);
+      $merchant_id = $store_obj->get('field_merchant_account_id')->value;
+      $from_address = $store_obj->getAddress()->getValue();
+      $patternry_helper_service = \Drupal::service('patternry_shippo.service_helper');
+      $from_address = $patternry_helper_service->getAddress($from_address);
+      $to_address = $from_address;
+      $validateDimension = $patternry_helper_service->validateShipmentDimension($merchant_id, $from_address, $to_address, $parcel);
+      if (empty($validateDimension->rates[0])) {
+        $msg = $validateDimension->messages[0]->text;
+        $form_state->setErrorByName('dimensions', $msg);
+      }
+    }
+  }
+}

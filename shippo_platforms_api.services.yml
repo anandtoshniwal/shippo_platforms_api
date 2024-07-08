@@ -1,0 +1,4 @@
+services:
+  shippo_platforms_api.shippo_api:
+    class: Drupal\shippo_platforms_api\ShippoPlatformsApiService
+    arguments: ['@entity_type.manager', '@logger.factory', '@http_client']
